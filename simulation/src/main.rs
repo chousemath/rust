@@ -1,4 +1,5 @@
 // global constants
+
 const day: u32 = 86_400;
 const seconds_in_year: u32 = 31_557_600;
 
@@ -50,11 +51,24 @@ enum YearlyDepreciation {
 
 // structs
 
+struct Equation {
+    a: i32,
+    b: i32,
+    c: i32,
+    d: i32,
+}
+
 struct Purchase {
     original: u32,
     e_reg: u32,
     e_pre: u32,
     total: u32,
+}
+
+struct Stepwise {
+    lower: u32,
+    upper: u32,
+    value: u32,
 }
 
 struct Vehicle {
@@ -78,6 +92,7 @@ struct Vehicle {
 }
 
 // helper functions
+
 fn e_reg(price: u32, tax: u32) -> f32 {
     (price as f32) * ((tax as f32) / 100.0)
 }
@@ -97,11 +112,42 @@ fn purchase_price(price: u32, tax: u32, lease_initial: u32) -> Purchase {
         total: -(e_reg_value + e_pre_value) as u32,
     }
 }
-fn price_linear(price: u32, subscription_price_factor: u32) -> f32 {
-    (price as f32) / (subscription_price_factor as f32)
+fn price_linear(price: u32, subscription_price_factor: u32) -> u32 {
+    price / subscription_price_factor
 }
-fn price_log(price: f32, factor_a: f32, factor_b: f32, factor_c: f32, factor_d: f32) -> f32 {
-    factor_a * (price + factor_b).log(factor_d) + factor_c
+fn price_log(price: u32, eq: Equation) -> i32 {
+    ((eq.a as f32) * ((price as i32 + eq.b) as f32).log(eq.d as f32) + (eq.c as f32)) as i32
+}
+fn priceSquare(price: u32, eq: Equation) -> i32 {
+    if (price as i32) < eq.b {
+        return eq.c;
+    }
+    ((((eq.a * (price as i32 - eq.b)) as f32) / 100.0).sqrt() as i32) + eq.c
+}
+fn price_stepwise(price: u32, stepwise_array: [Stepwise; 10], stepwise_default: u32) -> u32 {
+    if price >= stepwise_array[0].lower && price < stepwise_array[0].upper {
+        stepwise_array[0].value
+    } else if price >= stepwise_array[1].lower && price < stepwise_array[1].upper {
+        stepwise_array[1].value
+    } else if price >= stepwise_array[2].lower && price < stepwise_array[2].upper {
+        stepwise_array[2].value
+    } else if price >= stepwise_array[3].lower && price < stepwise_array[3].upper {
+        stepwise_array[3].value
+    } else if price >= stepwise_array[4].lower && price < stepwise_array[4].upper {
+        stepwise_array[4].value
+    } else if price >= stepwise_array[5].lower && price < stepwise_array[5].upper {
+        stepwise_array[5].value
+    } else if price >= stepwise_array[6].lower && price < stepwise_array[6].upper {
+        stepwise_array[6].value
+    } else if price >= stepwise_array[7].lower && price < stepwise_array[7].upper {
+        stepwise_array[7].value
+    } else if price >= stepwise_array[8].lower && price < stepwise_array[8].upper {
+        stepwise_array[8].value
+    } else if price >= stepwise_array[9].lower && price < stepwise_array[9].upper {
+        stepwise_array[9].value
+    } else {
+        stepwise_default
+    }
 }
 
 fn main() {
@@ -151,45 +197,71 @@ fn main() {
     const simulation_start: u32 = 1534649371;
     const simulation_end: u32 = 1629343771;
     const subscription_payment_method: u32 = 1;
-    const price_factor_log_a: u32 = 1;
-    const price_factor_log_b: u32 = 2;
-    const price_factor_log_c: u32 = 3;
-    const price_factor_log_d: u32 = 4;
-    const price_factor_square_a: u32 = 1;
-    const price_factor_square_b: u32 = 2;
-    const price_factor_square_c: u32 = 3;
-    const price_factor_square_d: u32 = 4;
+    const eq_log: Equation = Equation {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4,
+    };
+    const eq_square: Equation = Equation {
+        a: 1,
+        b: 2,
+        c: 3,
+        d: 4,
+    };
     const yearly_depreciation_method: u32 = 1;
-    const stepwise_lower_0: u32 = 0;
-    const stepwise_upper_0: u32 = 0;
-    const stepwise_value_0: u32 = 0;
-    const stepwise_lower_1: u32 = 0;
-    const stepwise_upper_1: u32 = 0;
-    const stepwise_value_1: u32 = 0;
-    const stepwise_lower_2: u32 = 0;
-    const stepwise_upper_2: u32 = 0;
-    const stepwise_value_2: u32 = 0;
-    const stepwise_lower_3: u32 = 0;
-    const stepwise_upper_3: u32 = 0;
-    const stepwise_value_3: u32 = 0;
-    const stepwise_lower_4: u32 = 0;
-    const stepwise_upper_4: u32 = 0;
-    const stepwise_value_4: u32 = 0;
-    const stepwise_lower_5: u32 = 0;
-    const stepwise_upper_5: u32 = 0;
-    const stepwise_value_5: u32 = 0;
-    const stepwise_lower_6: u32 = 0;
-    const stepwise_upper_6: u32 = 0;
-    const stepwise_value_6: u32 = 0;
-    const stepwise_lower_7: u32 = 0;
-    const stepwise_upper_7: u32 = 0;
-    const stepwise_value_7: u32 = 0;
-    const stepwise_lower_8: u32 = 0;
-    const stepwise_upper_8: u32 = 0;
-    const stepwise_value_8: u32 = 0;
-    const stepwise_lower_9: u32 = 0;
-    const stepwise_upper_9: u32 = 0;
-    const stepwise_value_9: u32 = 0;
+    let stepwise_array: [Stepwise; 10] = [
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+        Stepwise {
+            lower: 0,
+            upper: 0,
+            value: 0,
+        },
+    ];
     const stepwise_default: u32 = 0;
 
     // helper variables
