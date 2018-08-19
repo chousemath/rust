@@ -118,7 +118,7 @@ fn price_linear(price: u32, subscription_price_factor: u32) -> u32 {
 fn price_log(price: u32, eq: Equation) -> i32 {
     ((eq.a as f32) * ((price as i32 + eq.b) as f32).log(eq.d as f32) + (eq.c as f32)) as i32
 }
-fn priceSquare(price: u32, eq: Equation) -> i32 {
+fn price_square(price: u32, eq: Equation) -> i32 {
     if (price as i32) < eq.b {
         return eq.c;
     }
