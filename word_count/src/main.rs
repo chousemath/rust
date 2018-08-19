@@ -9,10 +9,14 @@ fn main() {
         .expect("Something went wrong with reading the file");
     let bible_split = bible.split(" ");
     let mut and_count = 0;
+    let mut but_count = 0;
     for word in bible_split {
-        if word == "and" {
-            and_count += 1;
+        match word {
+            "and" => and_count += 1,
+            "but" => but_count += 1,
+            _ => {}
         }
     }
     println!("The word 'and' is used {} times", and_count);
+    println!("The word 'but' is used {} times", but_count);
 }
